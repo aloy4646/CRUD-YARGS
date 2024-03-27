@@ -68,39 +68,28 @@ function bacaListContact(){
     })
 }
 
-function updateContactByName(name, email, mobile){
+function updateContact(updatedBy, name, email, mobile){
     const file = fs.readFileSync(dataPath, 'utf-8')
     const contacts = JSON.parse(file)
+    var indexContact = -1
 
-    var indexContact = contacts.findIndex(currentContact => currentContact.name.toLowerCase() === name.toLowerCase())
-
-    if (indexContact !== -1){
-        //pengecekan apakah ada input email dan validasi input tersebut
-        if(email && validator.isEmail(email)) 
-            contacts[indexContact].email = email
-
-        //pengecekan apakah ada input mobile dan validasi input tersebut
-        if(mobile && validator.isMobilePhone(mobile, "id-ID")) 
-            contacts[indexContact].mobile = mobile
-
-        //menyimpan data terbaru contacts ke file JSON
-        fs.writeFileSync(dataPath, JSON.stringify(contacts))
-        console.log(`- Contact berhasil diubah, berikut ini adalah data contact tersebut dengan versi terbaru`)
-        console.log(contacts[indexContact])
-    }else console.log("- Contact tidak ditemukan")
-}
-
-function updateContactByMobile(name, email, mobile){
-    const file = fs.readFileSync(dataPath, 'utf-8')
-    const contacts = JSON.parse(file)
-
-    var indexContact = contacts.findIndex(currentContact => currentContact.mobile === mobile)
+    if(updatedBy === "name") indexContact = contacts.findIndex(currentContact => currentContact.name.toLowerCase() === name.toLowerCase())
+    else if (updatedBy === "mobile") indexContact = contacts.findIndex(currentContact => currentContact.mobile === mobile)
 
     if (indexContact !== -1){
-        if(name && !contacts.find(currentContact => currentContact.name.toLowerCase() === name.toLowerCase())){
+        //pengecekan apakah ada input name dan validasi input tersebut
+        //dicek juga apakah perintah update menggunakan input name atau tidak
+        //jika menggunakan input name maka tidak perlu mengubah contact.name
+        if(updatedBy !== "name" && name && !contacts.find(currentContact => currentContact.name.toLowerCase() === name.toLowerCase())){
             contacts[indexContact].name = name
         }
 
+        //pengecekan apakah ada input mobile dan validasi input tersebut
+        //dicek juga apakah perintah update menggunakan input mobile atau tidak
+        //jika menggunakan input mobile maka tidak perlu mengubah contact.mobile
+        if(updatedBy !== "mobile" && mobile && validator.isMobilePhone(mobile, "id-ID")) 
+            contacts[indexContact].mobile = mobile
+
         //pengecekan apakah ada input email dan validasi input tersebut
         if(email && validator.isEmail(email)) 
             contacts[indexContact].email = email
@@ -112,33 +101,21 @@ function updateContactByMobile(name, email, mobile){
     }else console.log("- Contact tidak ditemukan")
 }
 
-function deleteContactByName(name){
+function deleteContact(name, mobile){
     const file = fs.readFileSync(dataPath, 'utf-8')
     const contacts = JSON.parse(file)
+    var indexContact = -1
 
-    const contact = contacts.find(currentContact => currentContact.name.toLowerCase() === name.toLowerCase())
-    if (contact){
-        //melakukan filtering untuk membuat array baru tanpa contact yang memiliki name sesuai input
-        const contactsBaru = contacts.filter(currentContact => currentContact.name.toLowerCase() !== name.toLowerCase())
-
-        //menyimpan data terbaru contacts ke file JSON
-        fs.writeFileSync(dataPath, JSON.stringify(contactsBaru))
-        console.log(`- Contact dengan data berikut ini sudah berhasil dihapus`)
-        console.log(contact)
-    }else console.log("- Contact tidak ditemukan")
-}
-
-function deleteContactByMobile(mobile){
-    const file = fs.readFileSync(dataPath, 'utf-8')
-    const contacts = JSON.parse(file)
-
-    const contact = contacts.find(currentContact => currentContact.mobile === mobile)
-    if (contact){
-        //melakukan filtering untuk membuat array baru tanpa contact yang memiliki name sesuai input
-        const contactsBaru = contacts.filter(currentContact => currentContact.mobile !== mobile)
+    if(name) indexContact = contacts.findIndex(currentContact => currentContact.name.toLowerCase() === name.toLowerCase())
+    else if(mobile) indexContact = contacts.findIndex(currentContact => currentContact.mobile === mobile)
+    
+    if (indexContact !== -1){
+        var contact = contacts[indexContact]
+        //menghapus contacts pada index sesuai indexContact
+        contacts.splice(indexContact, 1)
 
         //menyimpan data terbaru contacts ke file JSON
-        fs.writeFileSync(dataPath, JSON.stringify(contactsBaru))
+        fs.writeFileSync(dataPath, JSON.stringify(contacts))
         console.log(`- Contact dengan data berikut ini sudah berhasil dihapus`)
         console.log(contact)
     }else console.log("- Contact tidak ditemukan")
@@ -148,8 +125,6 @@ module.exports = {
     simpanContact,
     bacaContactByName,
     bacaListContact,
-    updateContactByName,
-    updateContactByMobile,
-    deleteContactByName,
-    deleteContactByMobile
+    updateContact,
+    deleteContact
 }

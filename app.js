@@ -87,7 +87,7 @@ yargs.command({
 
     handler(argv){
         console.log("Update contact dengan nama: ", argv.name)
-        controller.updateContactByName(argv.name, argv.email, argv.mobile)
+        controller.updateContact("name", argv.name, argv.email, argv.mobile)
     },
 })
 
@@ -116,7 +116,7 @@ yargs.command({
 
     handler(argv){
         console.log("Update contact dengan mobile phone number: ", argv.mobile)
-        controller.updateContactByMobile(argv.name, argv.email, argv.mobile)
+        controller.updateContact("mobile", argv.name, argv.email, argv.mobile)
     },
 })
 
@@ -133,7 +133,7 @@ yargs.command({
 
     handler(argv){
         console.log("Delete contact dengan name: ", argv.name)
-        controller.deleteContactByName(argv.name)
+        controller.deleteContact(argv.name, null)
     },
 })
 
@@ -150,7 +150,7 @@ yargs.command({
 
     handler(argv){
         console.log("Delete contact dengan mobile: ", argv.mobile)
-        controller.deleteContactByMobile(argv.mobile)
+        controller.deleteContact(null, argv.mobile)
     },
 })
 
